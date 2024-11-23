@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/kieferdan/onda-backend/internal/config"
 	"github.com/kieferdan/onda-backend/internal/handlers"
 	"github.com/kieferdan/onda-backend/internal/services"
 	"github.com/kieferdan/onda-backend/pkg/supabase"
@@ -16,15 +15,13 @@ import (
 
 func main() {
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+		log.Fatal("Error loading .env file")
 	}
 
-	cfg, err := config.Load()
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
-	}
+	url := os.Getenv("SUPABASE_URL")
+	key := os.Getenv("SUPABASE_ANON_KEY")
 
-	supabaseClient := supabase.NewClient(cfg.SupabaseURL, cfg.SupabaseKey)
+	supabaseClient := supabase.NewClient(url, key)
 	weatherService := services.NewWeatherService()
 
 	handler := handlers.NewHandler(supabaseClient, weatherService)
