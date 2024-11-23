@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-text">
       <div className="container mx-auto p-4">
-        <h1 className="text-4xl font-bold mb-6 text-primary">Surf Spot Finder</h1>
+        <h1 className="text-4xl font-bold mb-6 text-primary">OИDA</h1>
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Encontre as melhores praias para surfar</CardTitle>
