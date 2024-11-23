@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from 'lucide-react'
+import { Search, MapPin } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 
 
@@ -20,20 +20,22 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
     setLoading(true)
 
     try {
-      // Simulating geocoding API call
-      const response = await fetch(`https://api.example.com/geocode?address=${encodeURIComponent(location)}`)
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
       if (!response.ok) {
         throw new Error('Falha ao buscar localização')
       }
       const data = await response.json()
       
-      // Assuming the API returns lat and lng
-      const { lat, lng } = data
-      onLocationChange(lat, lng)
-      toast({
-        title: "Localização atualizada",
-        description: `Latitude: ${lat}, Longitude: ${lng}`,
-      })
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0]
+        onLocationChange(parseFloat(lat), parseFloat(lon))
+        toast({
+          title: "Localização atualizada",
+          description: `Latitude: ${lat}, Longitude: ${lon}`,
+        })
+      } else {
+        throw new Error('Localização não encontrada')
+      }
     } catch (error) {
       console.error('Error fetching location:', error)
       toast({
@@ -42,6 +44,39 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
         variant: "destructive",
       })
     } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGeolocation = () => {
+    setLoading(true)
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          onLocationChange(latitude, longitude)
+          toast({
+            title: "Localização atualizada",
+            description: `Latitude: ${latitude}, Longitude: ${longitude}`,
+          })
+          setLoading(false)
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error)
+          toast({
+            title: "Erro",
+            description: "Não foi possível obter sua localização. Por favor, tente inserir manualmente.",
+            variant: "destructive",
+          })
+          setLoading(false)
+        }
+      )
+    } else {
+      toast({
+        title: "Erro",
+        description: "Geolocalização não é suportada pelo seu navegador.",
+        variant: "destructive",
+      })
       setLoading(false)
     }
   }
@@ -62,6 +97,10 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
           <Search className="mr-2 h-4 w-4" />
         )}
         Buscar
+      </Button>
+      <Button type="button" onClick={handleGeolocation} disabled={loading}>
+        <MapPin className="mr-2 h-4 w-4" />
+        Usar minha localização
       </Button>
     </form>
   )

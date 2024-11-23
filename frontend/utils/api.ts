@@ -6,9 +6,28 @@ export const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const getWeatherConditions = async (lat: number, lng: number) => {
+export interface WeatherCondition {
+  temperature: number;
+  windSpeed: number;
+  windDirection: string;
+  waveHeight: number;
+  wavePeriod: number;
+  waveDirection: string;
+}
+
+export interface Beach {
+  id: number;
+  name: string;
+  lat: number;
+  lng: number;
+  rating: number;
+  distance: number;
+  surfCondition: string;
+}
+
+export const getWeatherConditions = async (lat: number, lng: number): Promise<WeatherCondition> => {
   try {
-    const response = await api.get(`/api/weather?lat=${lat}&lng=${lng}`);
+    const response = await api.get<WeatherCondition>(`/api/weather?lat=${lat}&lng=${lng}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching weather conditions:', error);
@@ -16,9 +35,9 @@ export const getWeatherConditions = async (lat: number, lng: number) => {
   }
 };
 
-export const getNearbyBeaches = async (lat: number, lng: number, limit: number = 5) => {
+export const getNearbyBeaches = async (lat: number, lng: number, limit: number = 5): Promise<Beach[]> => {
   try {
-    const response = await api.get(`/api/beaches/nearby?lat=${lat}&lng=${lng}&limit=${limit}`);
+    const response = await api.get<Beach[]>(`/api/beaches/nearby?lat=${lat}&lng=${lng}&limit=${limit}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching nearby beaches:', error);

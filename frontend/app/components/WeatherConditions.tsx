@@ -4,17 +4,8 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Wind, Droplet, Thermometer } from 'lucide-react'
-import { getWeatherConditions } from '@/utils/api'
+import { getWeatherConditions, WeatherCondition } from '@/utils/api'
 import { toast } from '@/hooks/use-toast'
-
-type WeatherData = {
-  temperature: number
-  windSpeed: number
-  windDirection: string
-  waveHeight: number
-  wavePeriod: number
-  waveDirection: string
-}
 
 interface WeatherConditionsProps {
   lat: number;
@@ -22,7 +13,7 @@ interface WeatherConditionsProps {
 }
 
 export default function WeatherConditions({ lat, lng }: WeatherConditionsProps) {
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
+  const [weatherData, setWeatherData] = useState<WeatherCondition | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
