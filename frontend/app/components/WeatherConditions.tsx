@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import { Skeleton } from "@/components/ui/skeleton"
 import { Wind, Droplet, Thermometer } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
+import { getWeatherConditions } from '@/utils/api'
+import { toast } from '@/hooks/use-toast'
 
 type WeatherData = {
   temperature: number
@@ -15,26 +16,35 @@ type WeatherData = {
   waveDirection: string
 }
 
-export default function WeatherConditions() {
+interface WeatherConditionsProps {
+  lat: number;
+  lng: number;
+}
+
+export default function WeatherConditions({ lat, lng }: WeatherConditionsProps) {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchWeatherData = async () => {
+      setLoading(true)
       try {
-        // TODO: Replace with actual API call
-        const response = await fetch('/api/weather?lat=-23.9618&lng=-46.3322')
-        const data = await response.json()
+        const data = await getWeatherConditions(lat, lng)
         setWeatherData(data)
       } catch (error) {
         console.error('Error fetching weather data:', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as condições meteorológicas. Por favor, tente novamente mais tarde.",
+          variant: "destructive",
+        })
       } finally {
         setLoading(false)
       }
     }
 
     fetchWeatherData()
-  }, [])
+  }, [lat, lng])
 
   if (loading) {
     return (
