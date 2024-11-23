@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Search } from 'lucide-react'
 
 export default function LocationSelector() {
   const [location, setLocation] = useState('')
 
-  const handleLocationSubmit = async (e: React.FormEvent) => {
+  const handleLocationSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implementar a lógica para buscar a localização usando uma API de geocoding
+    // TODO: Implementar a lógica para buscar a localização
     console.log('Localização submetida:', location)
   }
 
@@ -22,7 +23,9 @@ export default function LocationSelector() {
         onChange={(e) => setLocation(e.target.value)}
         className="flex-grow"
       />
-      <Button type="submit">Buscar</Button>
+      <Button type="submit" className="bg-secondary hover:bg-secondary/90">
+        <Search className="mr-2 h-4 w-4" /> Buscar
+      </Button>
     </form>
   )
 }
